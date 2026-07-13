@@ -1,0 +1,110 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Warm-tinted neutral scale (hue tied to the brand accent's own hue, not a generic warm/cool default).
+       Overriding Tailwind's built-in neutral-* means every existing neutral-* utility in the codebase
+       inherits the new tone automatically. */
+    --color-neutral-50: oklch(0.985 0.003 55);
+    --color-neutral-100: oklch(0.97 0.004 55);
+    --color-neutral-200: oklch(0.928 0.006 55);
+    --color-neutral-300: oklch(0.86 0.009 55);
+    --color-neutral-400: oklch(0.704 0.011 55);
+    --color-neutral-500: oklch(0.552 0.013 55);
+    --color-neutral-600: oklch(0.45 0.015 55);
+    --color-neutral-700: oklch(0.355 0.015 55);
+    --color-neutral-800: oklch(0.266 0.013 55);
+    --color-neutral-900: oklch(0.196 0.011 55);
+    --color-neutral-950: oklch(0.135 0.009 55);
+
+    /* Page background: near-white, barely tinted toward the brand hue -- deliberately not cream/sand. */
+    --color-paper: oklch(0.99 0.002 55);
+
+    /* Brand: single confident ember/amber accent. Carries the logo mark, primary CTAs, active states,
+       links -- the one saturated color in the system. */
+    --color-brand-50: oklch(0.97 0.02 55);
+    --color-brand-100: oklch(0.94 0.045 54);
+    --color-brand-200: oklch(0.88 0.08 51);
+    --color-brand-300: oklch(0.8 0.12 47);
+    --color-brand-400: oklch(0.74 0.16 44);
+    --color-brand-500: oklch(0.68 0.19 41);
+    --color-brand-600: oklch(0.58 0.19 37);
+    --color-brand-700: oklch(0.52 0.17 34);
+    --color-brand-800: oklch(0.42 0.14 32);
+    --color-brand-900: oklch(0.34 0.11 30);
+
+    /* WhatsApp: reserved exclusively for the "Pesan via WhatsApp" action. The only green in the system. */
+    --color-whatsapp: #25d366;
+    --color-whatsapp-dark: #128c7e;
+
+    --animate-marquee: marquee var(--duration, 40s) infinite linear;
+    --animate-marquee-vertical: marquee-vertical var(--duration, 40s) linear infinite;
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(calc(-100% - var(--gap)));
+    }
+}
+
+@keyframes marquee-vertical {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(calc(-100% - var(--gap)));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-marquee,
+    .animate-marquee-vertical {
+        animation-play-state: paused;
+    }
+
+    * {
+        scroll-behavior: auto !important;
+    }
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+@layer utilities {
+    .safe-bottom {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+@utility shadow-soft {
+    box-shadow:
+        0 1px 2px rgba(24, 20, 15, 0.04),
+        0 12px 24px -14px rgba(24, 20, 15, 0.16);
+}
+
+@utility shadow-soft-lg {
+    box-shadow:
+        0 2px 4px rgba(24, 20, 15, 0.04),
+        0 28px 56px -20px rgba(24, 20, 15, 0.22);
+}
+
+@utility shadow-soft-hover {
+    box-shadow:
+        0 4px 8px rgba(24, 20, 15, 0.05),
+        0 20px 36px -16px rgba(24, 20, 15, 0.22);
+}
