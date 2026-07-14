@@ -135,6 +135,8 @@ new #[Layout('layouts.app')] #[Title('Katalog')] class extends Component
             );
         },
     }">
+        <x-page-logo />
+
         <h1 class="text-xl font-extrabold tracking-tight text-neutral-900">Katalog</h1>
 
         {{-- Search + filters --}}

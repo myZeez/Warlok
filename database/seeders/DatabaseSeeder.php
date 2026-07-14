@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
+            WilayahSeeder::class,
             RegionSeeder::class,
             CategorySeeder::class,
             UmkmProductSeeder::class,

@@ -16,9 +16,7 @@
         Langsung ke konten
     </a>
 
-    <x-site-header />
-
-    <main id="main-content" class="pb-20 md:pb-10">
+    <main id="main-content" class="pb-20">
         {{ $slot }}
     </main>
 

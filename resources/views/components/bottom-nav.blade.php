@@ -8,10 +8,10 @@
 @endphp
 
 <nav
-    class="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200/70 bg-white/95 shadow-soft backdrop-blur-md md:hidden"
+    class="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200/70 bg-white/95 shadow-soft backdrop-blur-md"
     aria-label="Navigasi utama"
 >
-    <div class="mx-auto flex max-w-6xl items-stretch justify-around">
+    <div class="mx-auto flex max-w-md items-stretch justify-around">
         @foreach ($navItems as $item)
             @php $active = request()->routeIs($item['route']); @endphp
             <a

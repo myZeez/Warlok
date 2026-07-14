@@ -39,6 +39,8 @@ new #[Layout('layouts.app')] #[Title('Favorit')] class extends Component
     x-init="$wire.loadFavorites(JSON.parse(localStorage.getItem('warlok_favorites') || '[]'))"
     class="mx-auto max-w-6xl px-4 py-6"
 >
+    <x-page-logo />
+
     <h1 class="text-xl font-extrabold text-neutral-900">Favorit Saya</h1>
 
     @if (! $loaded)

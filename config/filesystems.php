@@ -41,7 +41,11 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            // No 'url' override: Laravel then emits relative "/storage/..." URLs that
+            // resolve against whatever host the browser is actually on, instead of a
+            // fixed APP_URL. That fixed value doesn't match how this app gets accessed
+            // during dev (LAN IP / phone, or a different local port), which was causing
+            // saved image previews to point at an unreachable host and hang forever.
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

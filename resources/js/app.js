@@ -123,6 +123,66 @@ window.featuredCarousel = function (count) {
     };
 };
 
+window.wilayahCascade = function (old) {
+    return {
+        selected: {
+            provinsi: old.provinsi || '',
+            kabupaten: old.kabupaten || '',
+            kecamatan: old.kecamatan || '',
+            kelurahan: old.kelurahan || '',
+        },
+        kabupatenOptions: [],
+        kecamatanOptions: [],
+        kelurahanOptions: [],
+
+        async init() {
+            // Re-hydrate dependent lists so old() selections survive a validation-failure re-render.
+            if (this.selected.provinsi) await this.loadKabupaten(this.selected.provinsi, true);
+            if (this.selected.kabupaten) await this.loadKecamatan(this.selected.kabupaten, true);
+            if (this.selected.kecamatan) await this.loadKelurahan(this.selected.kecamatan, true);
+        },
+
+        async onProvinsiChange() {
+            this.selected.kabupaten = '';
+            this.selected.kecamatan = '';
+            this.selected.kelurahan = '';
+            this.kecamatanOptions = [];
+            this.kelurahanOptions = [];
+            await this.loadKabupaten(this.selected.provinsi);
+        },
+
+        async onKabupatenChange() {
+            this.selected.kecamatan = '';
+            this.selected.kelurahan = '';
+            this.kelurahanOptions = [];
+            await this.loadKecamatan(this.selected.kabupaten);
+        },
+
+        async onKecamatanChange() {
+            this.selected.kelurahan = '';
+            await this.loadKelurahan(this.selected.kecamatan);
+        },
+
+        async loadKabupaten(id, preserve = false) {
+            const response = await fetch(`/wilayah/regencies/${id}`);
+            this.kabupatenOptions = response.ok ? await response.json() : [];
+            if (!preserve) this.selected.kabupaten = '';
+        },
+
+        async loadKecamatan(id, preserve = false) {
+            const response = await fetch(`/wilayah/districts/${id}`);
+            this.kecamatanOptions = response.ok ? await response.json() : [];
+            if (!preserve) this.selected.kecamatan = '';
+        },
+
+        async loadKelurahan(id, preserve = false) {
+            const response = await fetch(`/wilayah/villages/${id}`);
+            this.kelurahanOptions = response.ok ? await response.json() : [];
+            if (!preserve) this.selected.kelurahan = '';
+        },
+    };
+};
+
 document.addEventListener('alpine:init', () => {
     Alpine.store('favorites', {
         ids: JSON.parse(localStorage.getItem('warlok_favorites') || '[]'),

@@ -9,6 +9,8 @@
     ></div>
 
     <div class="relative mx-auto flex max-w-2xl flex-col items-center gap-6 text-center lg:max-w-3xl lg:gap-8">
+        <x-page-logo />
+
         <h1 class="text-balance text-[clamp(2.25rem,6vw,4.25rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-neutral-900">
             Warung &amp; UMKM <span class="text-brand-600">lokal</span>, deket kamu.
         </h1>

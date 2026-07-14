@@ -13,7 +13,8 @@ class ManageRegions extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->mutateFormDataUsing(fn (array $data) => RegionResource::withDenormalizedNames($data)),
         ];
     }
 }

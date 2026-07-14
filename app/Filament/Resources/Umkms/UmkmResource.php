@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Umkms;
 use App\Filament\Resources\Umkms\Pages\CreateUmkm;
 use App\Filament\Resources\Umkms\Pages\EditUmkm;
 use App\Filament\Resources\Umkms\Pages\ListUmkms;
+use App\Filament\Resources\Umkms\RelationManagers\ProductsRelationManager;
 use App\Filament\Resources\Umkms\Schemas\UmkmForm;
 use App\Filament\Resources\Umkms\Tables\UmkmsTable;
 use App\Models\Umkm;
@@ -41,7 +42,7 @@ class UmkmResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ProductsRelationManager::class,
         ];
     }
 

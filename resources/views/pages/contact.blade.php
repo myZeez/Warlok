@@ -1,6 +1,8 @@
 <x-layouts.app title="Kontak & Bantuan">
     <div class="mx-auto max-w-xl space-y-6 px-4 py-6">
         <div class="text-center">
+            <x-page-logo />
+
             <h1 class="text-xl font-extrabold tracking-tight text-neutral-900">Kontak &amp; Bantuan</h1>
             <p class="mt-1 text-sm text-neutral-500">Ada pertanyaan seputar Warlok? Hubungi kami lewat salah satu cara berikut.</p>
         </div>

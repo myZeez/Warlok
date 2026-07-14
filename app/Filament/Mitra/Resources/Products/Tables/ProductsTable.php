@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Products\Tables;
+namespace App\Filament\Mitra\Resources\Products\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -29,10 +29,6 @@ class ProductsTable
                     ->label('Produk')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('umkm.name')
-                    ->label('UMKM')
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('category.name')
                     ->label('Kategori'),
                 TextColumn::make('price')
@@ -47,11 +43,6 @@ class ProductsTable
                     ->label('Aktif'),
             ])
             ->filters([
-                SelectFilter::make('umkm_id')
-                    ->label('UMKM')
-                    ->relationship('umkm', 'name')
-                    ->searchable()
-                    ->preload(),
                 SelectFilter::make('category_id')
                     ->label('Kategori')
                     ->relationship('category', 'name'),

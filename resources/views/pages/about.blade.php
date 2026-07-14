@@ -16,6 +16,8 @@
 <x-layouts.app title="Cara Kerja">
     <div class="mx-auto max-w-2xl space-y-10 px-4 py-6">
         <div class="text-center">
+            <x-page-logo />
+
             <h1 class="text-xl font-extrabold tracking-tight text-neutral-900">Cara Kerja Warlok</h1>
             <p class="mt-1 text-sm text-neutral-500">
                 Warlok menghubungkan kamu dengan warung dan UMKM di sekitar &mdash; transaksi tetap langsung lewat WhatsApp &amp; QRIS.
