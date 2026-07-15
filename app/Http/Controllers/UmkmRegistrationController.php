@@ -48,6 +48,8 @@ class UmkmRegistrationController extends Controller
             'description' => ['nullable', 'string', 'max:1000'],
             'wa_number' => ['required', 'string', 'max:20'],
             'address' => ['required', 'string', 'max:1000'],
+            'lat' => ['nullable', 'numeric', 'between:-90,90'],
+            'long' => ['nullable', 'numeric', 'between:-180,180'],
             'logo' => ['nullable', 'image', 'max:2048'],
             'qris' => ['nullable', 'image', 'max:2048'],
         ]);
@@ -74,6 +76,8 @@ class UmkmRegistrationController extends Controller
                 'description' => $validated['description'] ?? null,
                 'wa_number' => $validated['wa_number'],
                 'address' => $validated['address'],
+                'lat' => $validated['lat'] ?? null,
+                'long' => $validated['long'] ?? null,
                 'status' => 'pending',
                 'logo_path' => $logoPath,
                 'qris_image_path' => $qrisPath,

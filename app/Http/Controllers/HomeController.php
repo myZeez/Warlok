@@ -35,7 +35,7 @@ class HomeController extends Controller
         $featuredProducts = Product::query()
             ->active()
             ->where('stock_status', 'tersedia')
-            ->with(['umkm', 'category'])
+            ->with(['umkm', 'category', 'reviews'])
             ->inRandomOrder()
             ->limit(8)
             ->get();

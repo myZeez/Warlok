@@ -3,13 +3,16 @@
 namespace App\Filament\Resources\Umkms\Schemas;
 
 use App\Models\Region;
+use App\Models\Umkm;
 use App\Models\User;
+use Closure;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
@@ -78,6 +81,35 @@ class UmkmForm
                             ->options(fn () => User::where('role', 'umkm_owner')->pluck('name', 'id'))
                             ->searchable()
                             ->preload(),
+                    ]),
+                Section::make('Opsi Pengiriman')
+                    ->columns(2)
+                    ->components([
+                        Toggle::make('pickup_enabled')
+                            ->label('Ambil di Toko')
+                            ->default(true),
+                        Toggle::make('delivery_self_enabled')
+                            ->label('Antar Sendiri')
+                            ->live(),
+                        TextInput::make('delivery_self_fee')
+                            ->label('Biaya Antar')
+                            ->numeric()
+                            ->prefix('Rp')
+                            ->default(0)
+                            ->visible(fn (Get $get) => $get('delivery_self_enabled'))
+                            ->columnSpan(2),
+                        Toggle::make('delivery_gojek_enabled')
+                            ->label('Gojek'),
+                        Toggle::make('delivery_grab_enabled')
+                            ->label('Grab')
+                            ->helperText('Gojek/Grab hanya label pilihan -- pemilik toko yang mengatur pengirimannya sendiri, tidak ada integrasi otomatis.')
+                            ->rule(function (Get $get) {
+                                return function (string $attribute, $value, Closure $fail) use ($get) {
+                                    if (! Umkm::hasAnyDeliveryMethodEnabled($get)) {
+                                        $fail('Pilih minimal satu opsi pengiriman.');
+                                    }
+                                };
+                            }),
                     ]),
                 Section::make('Media')
                     ->columns(2)

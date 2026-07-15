@@ -2,6 +2,7 @@
 
 namespace App\Filament\Mitra\Resources\Products\Tables;
 
+use App\Filament\Support\ProductDeletionGuard;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -56,11 +57,11 @@ class ProductsTable
             ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make(),
+                DeleteAction::make()->before(ProductDeletionGuard::forSingle()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->before(ProductDeletionGuard::forBulk()),
                 ]),
             ]);
     }

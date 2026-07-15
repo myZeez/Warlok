@@ -29,7 +29,7 @@ new #[Layout('layouts.app')] #[Title('Favorit')] class extends Component
         return Product::query()
             ->active()
             ->whereIn('id', $this->productIds)
-            ->with(['umkm', 'category'])
+            ->with(['umkm', 'category', 'reviews'])
             ->get();
     }
 }; ?>

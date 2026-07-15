@@ -1,3 +1,21 @@
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+// Leaflet's default marker icon URLs are relative paths baked in at build time and don't
+// resolve through Vite -- markers render as broken images unless explicitly reconfigured.
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: markerIcon2x,
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+});
+
+const OSM_TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const OSM_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
 window.stackedCarousel = function (items) {
     return {
         items,
@@ -123,6 +141,102 @@ window.featuredCarousel = function (count) {
     };
 };
 
+window.productGallery = function (images) {
+    return {
+        images,
+        activeIndex: 0,
+        startX: 0,
+        deltaX: 0,
+
+        onPointerDown(event) {
+            this.startX = event.clientX ?? event.touches?.[0]?.clientX ?? 0;
+            this.deltaX = 0;
+        },
+
+        onPointerMove(event) {
+            if (this.startX === 0 && this.deltaX === 0) return;
+            const x = event.clientX ?? event.touches?.[0]?.clientX ?? this.startX;
+            this.deltaX = x - this.startX;
+        },
+
+        onPointerUp() {
+            if (this.deltaX < -50) this.next();
+            else if (this.deltaX > 50) this.prev();
+
+            this.startX = 0;
+            this.deltaX = 0;
+        },
+
+        next() {
+            this.activeIndex = Math.min(this.activeIndex + 1, this.images.length - 1);
+        },
+
+        prev() {
+            this.activeIndex = Math.max(this.activeIndex - 1, 0);
+        },
+
+        goTo(index) {
+            this.activeIndex = index;
+        },
+    };
+};
+
+window.locationPicker = function (lat, long) {
+    return {
+        lat: lat || null,
+        long: long || null,
+        map: null,
+        marker: null,
+
+        init() {
+            const hasPin = this.lat && this.long;
+            const startLat = hasPin ? this.lat : -2.5;
+            const startLong = hasPin ? this.long : 118;
+
+            this.map = L.map(this.$refs.map, { scrollWheelZoom: false }).setView([startLat, startLong], hasPin ? 16 : 4);
+            L.tileLayer(OSM_TILE_URL, { attribution: OSM_ATTRIBUTION }).addTo(this.map);
+
+            if (hasPin) this.setMarker(this.lat, this.long);
+
+            this.map.on('click', (event) => this.setMarker(event.latlng.lat, event.latlng.lng));
+
+            // A picker embedded in a hidden/just-shown container (e.g. a Filament tab) can
+            // initialize with a zero-size viewport -- force Leaflet to remeasure once visible.
+            setTimeout(() => this.map.invalidateSize(), 150);
+        },
+
+        setMarker(lat, long) {
+            this.lat = lat;
+            this.long = long;
+
+            if (this.marker) {
+                this.marker.setLatLng([lat, long]);
+            } else {
+                this.marker = L.marker([lat, long]).addTo(this.map);
+            }
+        },
+
+        useMyLocation() {
+            if (!navigator.geolocation) return;
+
+            navigator.geolocation.getCurrentPosition((pos) => {
+                this.setMarker(pos.coords.latitude, pos.coords.longitude);
+                this.map.setView([pos.coords.latitude, pos.coords.longitude], 16);
+            }, () => {});
+        },
+    };
+};
+
+window.umkmMap = function (lat, long, name) {
+    return {
+        init() {
+            const map = L.map(this.$refs.map, { scrollWheelZoom: false }).setView([lat, long], 16);
+            L.tileLayer(OSM_TILE_URL, { attribution: OSM_ATTRIBUTION }).addTo(map);
+            L.marker([lat, long]).addTo(map).bindPopup(name);
+        },
+    };
+};
+
 window.wilayahCascade = function (old) {
     return {
         selected: {
@@ -197,6 +311,61 @@ document.addEventListener('alpine:init', () => {
                 : [...this.ids, id];
 
             localStorage.setItem('warlok_favorites', JSON.stringify(this.ids));
+        },
+    });
+
+    Alpine.store('cart', {
+        items: JSON.parse(localStorage.getItem('warlok_cart') || '[]'),
+
+        persist() {
+            localStorage.setItem('warlok_cart', JSON.stringify(this.items));
+        },
+
+        find(productId) {
+            return this.items.find((item) => item.productId === productId);
+        },
+
+        qtyFor(productId) {
+            return this.find(productId)?.qty ?? 0;
+        },
+
+        add(productId, qty = 1) {
+            const existing = this.find(productId);
+
+            if (existing) {
+                existing.qty += qty;
+            } else {
+                this.items.push({ productId, qty });
+            }
+
+            this.persist();
+        },
+
+        remove(productId) {
+            this.items = this.items.filter((item) => item.productId !== productId);
+            this.persist();
+        },
+
+        setQty(productId, qty) {
+            if (qty <= 0) {
+                this.remove(productId);
+
+                return;
+            }
+
+            const existing = this.find(productId);
+            if (existing) existing.qty = qty;
+
+            this.persist();
+        },
+
+        clear() {
+            this.items = [];
+            this.persist();
+        },
+
+        totalCount() {
+            return this.items.reduce((sum, item) => sum + item.qty, 0);
         },
     });
 });

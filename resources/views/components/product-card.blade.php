@@ -35,12 +35,27 @@
             <span x-show="!$store.favorites.has({{ $product->id }})">@svg('heroicon-o-heart', 'h-5 w-5')</span>
             <span x-show="$store.favorites.has({{ $product->id }})" x-cloak>@svg('heroicon-s-heart', 'h-5 w-5')</span>
         </button>
+
+        @if ($product->stock_status !== 'habis')
+            <button
+                type="button"
+                x-data
+                @click.stop.prevent="$store.cart.add({{ $product->id }})"
+                class="absolute bottom-2 right-2 grid h-9 w-9 place-items-center rounded-full bg-brand-600 text-white shadow-sm hover:bg-brand-700"
+                aria-label="Tambah ke keranjang"
+            >
+                @svg('heroicon-o-plus', 'h-5 w-5')
+            </button>
+        @endif
     </div>
 
     <div class="space-y-1 p-3">
         <p class="line-clamp-2 text-sm font-semibold leading-snug text-neutral-800">{{ $product->name }}</p>
         <p class="truncate text-xs text-neutral-500">{{ $product->umkm->name }}</p>
         <p class="font-bold text-brand-700">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
+        @if ($product->reviews->isNotEmpty())
+            <x-star-rating :rating="$product->reviews->avg('rating')" size="h-3 w-3" />
+        @endif
         @if ($distanceKm !== null)
             <p class="text-[11px] text-neutral-400">
                 {{ $distanceKm < 1 ? round($distanceKm * 1000).' m' : round($distanceKm, 1).' km' }} dari kamu

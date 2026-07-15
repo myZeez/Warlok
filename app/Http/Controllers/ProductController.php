@@ -13,12 +13,12 @@ class ProductController extends Controller
         abort_unless($umkm->status === 'active', 404);
         abort_unless($product->is_active, 404);
 
-        $product->load(['umkm.region', 'category', 'images']);
+        $product->load(['umkm.region', 'category', 'images', 'reviews']);
 
         $otherProducts = $umkm->products()
             ->active()
             ->where('id', '!=', $product->id)
-            ->with('category')
+            ->with(['category', 'reviews'])
             ->limit(4)
             ->get();
 

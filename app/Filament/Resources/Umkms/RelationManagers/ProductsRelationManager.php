@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Umkms\RelationManagers;
 
+use App\Filament\Support\ProductDeletionGuard;
+use App\Filament\Support\ProductGallerySync;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -19,6 +21,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class ProductsRelationManager extends RelationManager
@@ -77,10 +80,18 @@ class ProductsRelationManager extends RelationManager
                     ->label('Aktif ditampilkan')
                     ->default(true),
                 FileUpload::make('photo_path')
-                    ->label('Foto Produk')
+                    ->label('Foto Sampul')
                     ->image()
                     ->disk('public')
                     ->directory('product-photos'),
+                FileUpload::make('gallery')
+                    ->label('Foto Lainnya')
+                    ->multiple()
+                    ->image()
+                    ->disk('public')
+                    ->directory('product-photos')
+                    ->reorderable()
+                    ->panelLayout('grid'),
             ]);
     }
 
@@ -112,15 +123,18 @@ class ProductsRelationManager extends RelationManager
                     ->label('Aktif'),
             ])
             ->headerActions([
-                CreateAction::make(),
+                CreateAction::make()
+                    ->after(fn (array $data, Model $record) => ProductGallerySync::sync($record, $data['gallery'] ?? [])),
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                EditAction::make()
+                    ->mutateRecordDataUsing(fn (array $data, Model $record) => [...$data, 'gallery' => ProductGallerySync::hydrate($record)])
+                    ->after(fn (array $data, Model $record) => ProductGallerySync::sync($record, $data['gallery'] ?? [])),
+                DeleteAction::make()->before(ProductDeletionGuard::forSingle()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->before(ProductDeletionGuard::forBulk()),
                 ]),
             ]);
     }

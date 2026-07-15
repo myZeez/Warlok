@@ -13,6 +13,8 @@ use Illuminate\Support\Str;
 #[Fillable([
     'user_id', 'region_id', 'name', 'slug', 'description', 'wa_number',
     'address', 'lat', 'long', 'logo_path', 'qris_image_path', 'status', 'is_open',
+    'pickup_enabled', 'delivery_self_enabled', 'delivery_self_fee',
+    'delivery_gojek_enabled', 'delivery_grab_enabled',
 ])]
 class Umkm extends Model
 {
@@ -24,6 +26,11 @@ class Umkm extends Model
             'lat' => 'decimal:7',
             'long' => 'decimal:7',
             'is_open' => 'boolean',
+            'pickup_enabled' => 'boolean',
+            'delivery_self_enabled' => 'boolean',
+            'delivery_self_fee' => 'decimal:2',
+            'delivery_gojek_enabled' => 'boolean',
+            'delivery_grab_enabled' => 'boolean',
         ];
     }
 
@@ -64,7 +71,17 @@ class Umkm extends Model
 
     public function reviews(): HasMany
     {
-        return $this->hasMany(Review::class);
+        return $this->hasMany(Review::class)->latest();
+    }
+
+    public function averageRating(): ?float
+    {
+        return $this->reviews()->avg('rating');
+    }
+
+    public function reviewsCount(): int
+    {
+        return $this->reviews()->count();
     }
 
     public function updateReminders(): HasMany
@@ -72,9 +89,33 @@ class Umkm extends Model
         return $this->hasMany(UpdateReminder::class);
     }
 
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function scopeActive(Builder $query): void
     {
         $query->where('status', 'active');
+    }
+
+    /**
+     * @return array<string, bool>
+     */
+    public function enabledDeliveryMethods(): array
+    {
+        return array_filter([
+            'pickup' => $this->pickup_enabled,
+            'self_delivery' => $this->delivery_self_enabled,
+            'gojek' => $this->delivery_gojek_enabled,
+            'grab' => $this->delivery_grab_enabled,
+        ]);
+    }
+
+    public static function hasAnyDeliveryMethodEnabled(callable $get): bool
+    {
+        return $get('pickup_enabled') || $get('delivery_self_enabled')
+            || $get('delivery_gojek_enabled') || $get('delivery_grab_enabled');
     }
 
     /**

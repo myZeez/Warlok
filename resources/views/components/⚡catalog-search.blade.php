@@ -87,7 +87,7 @@ new #[Layout('layouts.app')] #[Title('Katalog')] class extends Component
     {
         $products = Product::query()
             ->active()
-            ->with(['umkm.region', 'category'])
+            ->with(['umkm.region', 'category', 'reviews'])
             ->whereHas('umkm', fn ($query) => $query->active())
             ->when($this->q !== '', function ($query) {
                 $query->where(function ($inner) {

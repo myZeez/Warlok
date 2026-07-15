@@ -55,10 +55,18 @@ class ProductForm
                     ->label('Aktif ditampilkan')
                     ->default(true),
                 FileUpload::make('photo_path')
-                    ->label('Foto Produk')
+                    ->label('Foto Sampul')
                     ->image()
                     ->disk('public')
                     ->directory('product-photos'),
+                FileUpload::make('gallery')
+                    ->label('Foto Lainnya')
+                    ->multiple()
+                    ->image()
+                    ->disk('public')
+                    ->directory('product-photos')
+                    ->reorderable()
+                    ->panelLayout('grid'),
             ]);
     }
 }

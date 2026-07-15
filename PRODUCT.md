@@ -16,6 +16,12 @@ product
 
 Warlok is a hyperlocal discovery layer for UMKM (small/micro local businesses): a region-filtered catalog of nearby warungs and businesses where every "buy" action hands off to WhatsApp (chat) and QRIS (payment) rather than a built-in checkout. The platform's job is discovery and trust, not transaction processing. Success = a buyer finds a nearby UMKM fast and messages them on WhatsApp; a UMKM owner gets discovered by neighbors without needing any technical setup of their own.
 
+### Product Pivot (recorded decision)
+
+Warlok is adding a lightweight mini online-store layer on top of the discovery model above (decided 2026-07-14): multiple photos per product, reviews and ratings on both products and stores, a map on each store page, owner-configurable delivery options (self-delivery with a flat fee, or a Gojek/Grab label the owner arranges themselves — no courier API integration), and a cart + checkout flow.
+
+This knowingly departs from the "rather than a built-in checkout" line above — but only on the *mechanism*, not the *trust model*. Checkout still ends in an order summary, QRIS for payment, and a WhatsApp confirmation to the store owner — not a real payment gateway, and still no account required to buy. A cart is a more structured way to arrive at the same WhatsApp conversation, not a replacement for it. The platform's job is still discovery and trust, not transaction processing.
+
 ## Brand Personality
 
 **Three words (revised): Percaya Diri (Confident), Terpercaya (Trustworthy), Jernih (Clear).**

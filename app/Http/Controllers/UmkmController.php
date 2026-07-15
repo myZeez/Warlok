@@ -13,7 +13,8 @@ class UmkmController extends Controller
 
         $umkm->load([
             'region',
-            'products' => fn ($query) => $query->active()->with('category'),
+            'products' => fn ($query) => $query->active()->with(['category', 'reviews']),
+            'reviews',
         ]);
 
         return view('umkm.show', ['umkm' => $umkm]);

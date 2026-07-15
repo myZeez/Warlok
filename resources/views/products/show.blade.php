@@ -5,10 +5,48 @@
             Kembali ke {{ $product->umkm->name }}
         </a>
 
+        @php
+            $galleryImages = collect([$product->photo_path, ...$product->images->pluck('image_path')])
+                ->filter()
+                ->map(fn ($path) => Storage::url($path))
+                ->values();
+        @endphp
+
         <div class="grid gap-6 sm:grid-cols-2">
-            <div class="relative aspect-square overflow-hidden rounded-3xl bg-brand-50 shadow-soft">
-                @if ($product->photo_path)
-                    <img src="{{ Storage::url($product->photo_path) }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
+            <div
+                class="relative aspect-square overflow-hidden rounded-3xl bg-brand-50 shadow-soft"
+                @if ($galleryImages->count() > 1) x-data="productGallery(@js($galleryImages))" @endif
+            >
+                @if ($galleryImages->isNotEmpty())
+                    <div
+                        @if ($galleryImages->count() > 1)
+                            class="flex h-full touch-pan-y transition-transform duration-300 ease-out"
+                            :style="`transform: translateX(-${activeIndex * 100}%)`"
+                            @pointerdown="onPointerDown($event)"
+                            @pointermove="onPointerMove($event)"
+                            @pointerup="onPointerUp()"
+                        @else
+                            class="flex h-full"
+                        @endif
+                    >
+                        @foreach ($galleryImages as $image)
+                            <img src="{{ $image }}" alt="{{ $product->name }}" class="h-full w-full shrink-0 object-cover" draggable="false">
+                        @endforeach
+                    </div>
+
+                    @if ($galleryImages->count() > 1)
+                        <div class="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
+                            <template x-for="(image, index) in images" :key="index">
+                                <button
+                                    type="button"
+                                    @click="goTo(index)"
+                                    class="pointer-events-auto h-1.5 rounded-full bg-white/70 transition-all"
+                                    :class="activeIndex === index ? 'w-4 bg-white' : 'w-1.5'"
+                                    :aria-label="`Foto ke-${index + 1}`"
+                                ></button>
+                            </template>
+                        </div>
+                    @endif
                 @else
                     <div class="grid h-full w-full place-items-center text-brand-300">
                         @svg('heroicon-o-photo', 'h-16 w-16')
@@ -54,7 +92,20 @@
                     <p class="text-sm leading-relaxed text-neutral-600">{{ $product->description }}</p>
                 @endif
 
-                <x-wa-button :href="$product->waLink()" class="w-full" />
+                <div class="flex gap-2">
+                    <x-wa-button :href="$product->waLink()" class="flex-1" />
+                    @if ($product->stock_status !== 'habis')
+                        <button
+                            type="button"
+                            x-data
+                            @click="$store.cart.add({{ $product->id }})"
+                            class="flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full border-2 border-brand-600 px-4 font-bold text-brand-600 transition hover:bg-brand-50 active:scale-[0.98]"
+                        >
+                            @svg('heroicon-o-shopping-cart', 'h-5 w-5')
+                            <span x-text="$store.cart.qtyFor({{ $product->id }}) > 0 ? `Di keranjang (${$store.cart.qtyFor({{ $product->id }})})` : 'Tambah'"></span>
+                        </button>
+                    @endif
+                </div>
 
                 @if ($product->umkm->qris_image_path)
                     <details class="rounded-2xl bg-white p-3 shadow-soft">
@@ -69,6 +120,13 @@
                 @endif
             </div>
         </div>
+
+        <x-review-section
+            :reviews="$product->reviews"
+            :average="$product->averageRating()"
+            :count="$product->reviewsCount()"
+            :action="route('products.reviews.store', [$product->umkm, $product])"
+        />
 
         @if ($otherProducts->isNotEmpty())
             <div class="space-y-3 pt-4">

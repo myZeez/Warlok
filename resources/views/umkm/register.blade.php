@@ -137,6 +137,20 @@
                     @error('address') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                 </div>
 
+                <div x-data="locationPicker({{ old('lat', 'null') }}, {{ old('long', 'null') }})" x-init="init()">
+                    <div class="mb-1 flex items-center justify-between">
+                        <label class="text-sm font-semibold text-neutral-700">Titik Lokasi (opsional)</label>
+                        <button type="button" @click="useMyLocation()" class="text-xs font-semibold text-brand-700 hover:underline">
+                            Gunakan lokasi saya
+                        </button>
+                    </div>
+                    <div x-ref="map" class="h-48 w-full rounded-xl border border-neutral-200"></div>
+                    <input type="hidden" name="lat" :value="lat">
+                    <input type="hidden" name="long" :value="long">
+                    <p class="mt-1 text-xs text-neutral-500">Klik peta untuk menandai lokasi toko kamu, biar pembeli bisa datang langsung.</p>
+                    @error('lat') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
+                </div>
+
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label for="logo" class="mb-1 block text-sm font-semibold text-neutral-700">Logo/Foto Toko</label>

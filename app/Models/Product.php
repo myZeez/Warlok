@@ -58,7 +58,27 @@ class Product extends Model
 
     public function images(): HasMany
     {
-        return $this->hasMany(ProductImage::class);
+        return $this->hasMany(ProductImage::class)->orderBy('sort_order');
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class)->latest();
+    }
+
+    public function averageRating(): ?float
+    {
+        return $this->reviews()->avg('rating');
+    }
+
+    public function reviewsCount(): int
+    {
+        return $this->reviews()->count();
+    }
+
+    public function orderItems(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
     }
 
     public function scopeActive(Builder $query): void

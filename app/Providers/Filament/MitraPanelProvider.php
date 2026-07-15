@@ -8,7 +8,10 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Support\Assets\Css;
+use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -18,6 +21,18 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class MitraPanelProvider extends PanelProvider
 {
+    public function boot(): void
+    {
+        // The Mitra panel's own location-picker widget (TokoSaya) needs Leaflet, but Filament
+        // panels don't go through the public site's Vite bundle -- registered here instead,
+        // loaded from Leaflet's CDN since this is a one-off widget, not worth a real package.
+        FilamentAsset::register([
+            Css::make('leaflet-css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'),
+            Js::make('leaflet-js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'),
+            Js::make('location-picker-js', asset('js/location-picker.js')),
+        ]);
+    }
+
     public function panel(Panel $panel): Panel
     {
         return $panel
