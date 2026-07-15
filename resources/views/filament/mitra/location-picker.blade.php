@@ -1,3 +1,9 @@
+@once
+    <link rel="stylesheet" href="{{ \Filament\Support\Facades\FilamentAsset::getStyleHref('leaflet-css') }}">
+    <script src="{{ \Filament\Support\Facades\FilamentAsset::getScriptSrc('leaflet-js') }}"></script>
+    <script src="{{ \Filament\Support\Facades\FilamentAsset::getScriptSrc('location-picker-js') }}"></script>
+@endonce
+
 <div
     wire:ignore
     x-data="locationPicker(@js($getRecord()->lat), @js($getRecord()->long))"

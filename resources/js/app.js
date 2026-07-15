@@ -1,20 +1,38 @@
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-
-// Leaflet's default marker icon URLs are relative paths baked in at build time and don't
-// resolve through Vite -- markers render as broken images unless explicitly reconfigured.
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: markerIcon2x,
-    iconUrl: markerIcon,
-    shadowUrl: markerShadow,
-});
-
 const OSM_TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const OSM_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+// Leaflet (~150KB) was previously loaded on every single page via a static top-level
+// import, even pages with no map at all -- this loads it only when a map component
+// actually mounts, as its own separate chunk fetched on demand.
+let leafletPromise = null;
+
+function loadLeaflet() {
+    if (!leafletPromise) {
+        leafletPromise = Promise.all([
+            import('leaflet'),
+            import('leaflet/dist/leaflet.css'),
+            import('leaflet/dist/images/marker-icon.png'),
+            import('leaflet/dist/images/marker-icon-2x.png'),
+            import('leaflet/dist/images/marker-shadow.png'),
+        ]).then(([leafletModule, , markerIcon, markerIcon2x, markerShadow]) => {
+            const L = leafletModule.default;
+
+            // Leaflet's default marker icon URLs are relative paths baked in at build time
+            // and don't resolve through Vite -- markers render as broken images unless
+            // explicitly reconfigured.
+            delete L.Icon.Default.prototype._getIconUrl;
+            L.Icon.Default.mergeOptions({
+                iconRetinaUrl: markerIcon2x.default,
+                iconUrl: markerIcon.default,
+                shadowUrl: markerShadow.default,
+            });
+
+            return L;
+        });
+    }
+
+    return leafletPromise;
+}
 
 window.stackedCarousel = function (items) {
     return {
@@ -187,14 +205,17 @@ window.locationPicker = function (lat, long) {
         long: long || null,
         map: null,
         marker: null,
+        L: null,
 
-        init() {
+        async init() {
             const hasPin = this.lat && this.long;
             const startLat = hasPin ? this.lat : -2.5;
             const startLong = hasPin ? this.long : 118;
 
-            this.map = L.map(this.$refs.map, { scrollWheelZoom: false }).setView([startLat, startLong], hasPin ? 16 : 4);
-            L.tileLayer(OSM_TILE_URL, { attribution: OSM_ATTRIBUTION }).addTo(this.map);
+            this.L = await loadLeaflet();
+
+            this.map = this.L.map(this.$refs.map, { scrollWheelZoom: false }).setView([startLat, startLong], hasPin ? 16 : 4);
+            this.L.tileLayer(OSM_TILE_URL, { attribution: OSM_ATTRIBUTION }).addTo(this.map);
 
             if (hasPin) this.setMarker(this.lat, this.long);
 
@@ -212,7 +233,7 @@ window.locationPicker = function (lat, long) {
             if (this.marker) {
                 this.marker.setLatLng([lat, long]);
             } else {
-                this.marker = L.marker([lat, long]).addTo(this.map);
+                this.marker = this.L.marker([lat, long]).addTo(this.map);
             }
         },
 
@@ -229,7 +250,8 @@ window.locationPicker = function (lat, long) {
 
 window.umkmMap = function (lat, long, name) {
     return {
-        init() {
+        async init() {
+            const L = await loadLeaflet();
             const map = L.map(this.$refs.map, { scrollWheelZoom: false }).setView([lat, long], 16);
             L.tileLayer(OSM_TILE_URL, { attribution: OSM_ATTRIBUTION }).addTo(map);
             L.marker([lat, long]).addTo(map).bindPopup(name);

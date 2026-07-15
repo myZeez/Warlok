@@ -2,7 +2,10 @@
 
 namespace App\Filament\Mitra\Resources\Orders\Tables;
 
+use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
@@ -58,6 +61,23 @@ class OrdersTable
                     ]),
             ])
             ->recordActions([
+                EditAction::make()
+                    ->label('Balas')
+                    ->modalHeading('Update Status & Catatan untuk Pembeli')
+                    ->schema([
+                        Select::make('status')
+                            ->options([
+                                'pending' => 'Pending',
+                                'confirmed' => 'Confirmed',
+                                'completed' => 'Completed',
+                                'cancelled' => 'Cancelled',
+                            ])
+                            ->required(),
+                        Textarea::make('seller_note')
+                            ->label('Catatan untuk Pembeli')
+                            ->rows(3)
+                            ->placeholder('Contoh: pesanan sedang disiapkan, siap diambil jam 5 sore'),
+                    ]),
                 ViewAction::make()
                     ->schema([
                         Section::make('Pesanan')

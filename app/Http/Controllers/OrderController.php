@@ -112,4 +112,15 @@ class OrderController extends Controller
 
         return view('orders.confirmation', ['order' => $order]);
     }
+
+    public function myOrders(): View
+    {
+        $orders = Order::query()
+            ->whereIn('id', Session::get('recent_order_ids', []))
+            ->with(['items', 'umkm'])
+            ->latest()
+            ->get();
+
+        return view('orders.my-orders', ['orders' => $orders]);
+    }
 }

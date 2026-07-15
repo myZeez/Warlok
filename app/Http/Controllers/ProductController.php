@@ -27,4 +27,17 @@ class ProductController extends Controller
             'otherProducts' => $otherProducts,
         ]);
     }
+
+    public function buyNow(Umkm $umkm, Product $product): View
+    {
+        abort_unless($umkm->status === 'active', 404);
+        abort_unless($product->is_active, 404);
+        abort_if($product->stock_status === 'habis', 404);
+
+        return view('products.buy-now', [
+            'product' => $product,
+            'umkm' => $umkm,
+            'methods' => $umkm->enabledDeliveryMethods(),
+        ]);
+    }
 }

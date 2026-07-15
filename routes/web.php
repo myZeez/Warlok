@@ -38,7 +38,12 @@ Route::post('/toko/{umkm:slug}/produk/{product:slug}/ulasan', [ReviewController:
 
 Route::post('/toko/{umkm:slug}/ulasan', [ReviewController::class, 'storeForUmkm'])->name('umkm.reviews.store');
 
+Route::get('/toko/{umkm:slug}/produk/{product:slug}/beli', [ProductController::class, 'buyNow'])
+    ->name('products.buyNow')
+    ->scopeBindings();
+
 Route::post('/toko/{umkm:slug}/checkout', [OrderController::class, 'store'])->name('orders.store');
+Route::get('/pesanan-saya', [OrderController::class, 'myOrders'])->name('orders.mine');
 Route::get('/pesanan/{order}', [OrderController::class, 'confirmation'])->name('orders.confirmation');
 
 Route::get('/toko/{umkm:slug}', [UmkmController::class, 'show'])->name('umkm.show');

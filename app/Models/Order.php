@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'umkm_id', 'user_id', 'buyer_name', 'buyer_phone', 'buyer_address',
-    'delivery_method', 'delivery_fee', 'subtotal', 'total', 'status', 'notes',
+    'delivery_method', 'delivery_fee', 'subtotal', 'total', 'status', 'notes', 'seller_note',
 ])]
 class Order extends Model
 {
@@ -44,6 +44,16 @@ class Order extends Model
             'self_delivery' => 'Antar Sendiri',
             'gojek' => 'Gojek',
             'grab' => 'Grab',
+        };
+    }
+
+    public function statusLabel(): string
+    {
+        return match ($this->status) {
+            'pending' => 'Menunggu Konfirmasi',
+            'confirmed' => 'Dikonfirmasi',
+            'completed' => 'Selesai',
+            'cancelled' => 'Dibatalkan',
         };
     }
 

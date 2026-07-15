@@ -1,5 +1,6 @@
 @php
     $menuItems = [
+        ['label' => 'Pesanan Saya', 'route' => 'orders.mine', 'icon' => 'clipboard-document-list'],
         ['label' => 'Favorit Saya', 'route' => 'favorites.index', 'icon' => 'heart'],
         ['label' => 'Cara Kerja Warlok', 'route' => 'about', 'icon' => 'information-circle'],
         ['label' => 'Daftarkan UMKM Kamu', 'route' => 'umkm.register', 'icon' => 'building-storefront'],

@@ -60,8 +60,9 @@
 
         <x-wa-button :href="$order->umkm->waLink($order->waSummaryMessage())" label="Konfirmasi via WhatsApp" class="w-full" />
 
-        <a href="{{ route('catalog.index') }}" class="block text-center text-sm font-semibold text-neutral-500 hover:text-neutral-700">
-            Lanjut belanja
-        </a>
+        <div class="flex justify-center gap-4 text-sm font-semibold">
+            <a href="{{ route('orders.mine') }}" class="text-brand-700 hover:underline">Lihat pesanan saya</a>
+            <a href="{{ route('catalog.index') }}" class="text-neutral-500 hover:text-neutral-700">Lanjut belanja</a>
+        </div>
     </div>
 </x-layouts.app>

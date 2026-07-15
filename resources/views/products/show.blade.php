@@ -92,9 +92,17 @@
                     <p class="text-sm leading-relaxed text-neutral-600">{{ $product->description }}</p>
                 @endif
 
-                <div class="flex gap-2">
-                    <x-wa-button :href="$product->waLink()" class="flex-1" />
-                    @if ($product->stock_status !== 'habis')
+                <x-wa-button :href="$product->waLink()" class="w-full" />
+
+                @if ($product->stock_status !== 'habis')
+                    <div class="flex gap-2">
+                        <a
+                            href="{{ route('products.buyNow', [$product->umkm, $product]) }}"
+                            class="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-full bg-brand-600 font-bold text-white transition hover:bg-brand-700 active:scale-[0.98]"
+                        >
+                            @svg('heroicon-o-bolt', 'h-5 w-5')
+                            Beli Langsung
+                        </a>
                         <button
                             type="button"
                             x-data
@@ -104,8 +112,8 @@
                             @svg('heroicon-o-shopping-cart', 'h-5 w-5')
                             <span x-text="$store.cart.qtyFor({{ $product->id }}) > 0 ? `Di keranjang (${$store.cart.qtyFor({{ $product->id }})})` : 'Tambah'"></span>
                         </button>
-                    @endif
-                </div>
+                    </div>
+                @endif
 
                 @if ($product->umkm->qris_image_path)
                     <details class="rounded-2xl bg-white p-3 shadow-soft">

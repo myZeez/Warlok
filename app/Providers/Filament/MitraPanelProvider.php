@@ -26,10 +26,12 @@ class MitraPanelProvider extends PanelProvider
         // The Mitra panel's own location-picker widget (TokoSaya) needs Leaflet, but Filament
         // panels don't go through the public site's Vite bundle -- registered here instead,
         // loaded from Leaflet's CDN since this is a one-off widget, not worth a real package.
+        // loadedOnRequest() keeps this off every other Mitra page (Products, Orders, ...) --
+        // it's pulled in explicitly by location-picker.blade.php, the only view that needs it.
         FilamentAsset::register([
-            Css::make('leaflet-css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'),
-            Js::make('leaflet-js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'),
-            Js::make('location-picker-js', asset('js/location-picker.js')),
+            Css::make('leaflet-css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css')->loadedOnRequest(),
+            Js::make('leaflet-js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js')->loadedOnRequest(),
+            Js::make('location-picker-js', asset('js/location-picker.js'))->loadedOnRequest(),
         ]);
     }
 
